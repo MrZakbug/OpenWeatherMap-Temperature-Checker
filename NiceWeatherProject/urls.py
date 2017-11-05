@@ -20,5 +20,6 @@ from NiceWeatherApp import views
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
-    url(r'^admin/', admin.site.urls)
+    url(r'^admin/', admin.site.urls),
+    url(r'^[0-9.]+&[0-9.]+', views.result, name='result')
 ]
