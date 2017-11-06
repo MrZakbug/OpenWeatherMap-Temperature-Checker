@@ -1,16 +1,12 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.forms import NumberInput
 
 
 def home(request):
     if request.method == 'POST':
         latitude = request.POST['latitude']
         longitude = request.POST['longitude']
-        # if latitude.is_valid() and longitude.is_valid():
         return HttpResponseRedirect('/' + latitude + '&' + longitude + '/')
-    # else:
-    #     return HttpResponseRedirect('/error/')
     return render(request, 'home.html')
 
 
@@ -20,9 +16,16 @@ def result(request):
 
     API_KEY = '3d687c8dd758a1e889ae152a71968950'
 
+    """Getting coordinates from url path"""
+    path = request.path.split('&')
+    latitude = float(path[0][1:])
+    longitude = float(path[1][:-1])
+
+    """Getting temperature data for Geolocation"""
     owm = pyowm.OWM(API_KEY)
-    observation = owm.weather_at_coords(-34.123, 80.0)
+    observation = owm.weather_at_coords(latitude, longitude)
     w = observation.get_weather()
+    """Getting name of the station for Geolocation"""
     raw = observation.to_JSON()
     processed = json.loads(raw)
     try:
@@ -34,6 +37,8 @@ def result(request):
             location_name = processed['Location']['country']
         else:
             location_name = 'Not found'
+
     avg_temp = w.get_temperature('celsius')['temp']
 
-    return render(request, 'result.html', {'location_name': location_name, 'avg_temp': avg_temp})
+    return render(request, 'result.html', {'request': request, 'location_name': location_name, 'avg_temp': avg_temp,
+                                           'latitude': latitude, 'longitude': longitude})
