@@ -8,6 +8,10 @@
         <br>
         <h3>We also determined that the closest station providing information for this Geolocation is:</h3>
         <h4>{{ location_name }}</h4>
+        {% else %}
+            <br>
+            <br>
+            <h3>Unfortunately we have not been able to determine the closest station providing information for this Geolocation</h3>
     {% endif %}
     </center>
 {% endblock %}

@@ -6,7 +6,10 @@ def home(request):
     if request.method == 'POST':
         latitude = request.POST['latitude']
         longitude = request.POST['longitude']
-        return HttpResponseRedirect('/' + latitude + '&' + longitude + '/')
+        try:
+            return HttpResponseRedirect('/' + latitude + '&' + longitude + '/')
+        except:
+            return render(request, '404.html')
     return render(request, 'home.html')
 
 
@@ -23,7 +26,11 @@ def result(request):
 
     """Getting temperature data for Geolocation"""
     owm = pyowm.OWM(API_KEY)
-    observation = owm.weather_at_coords(latitude, longitude)
+    try:
+        observation = owm.weather_at_coords(latitude, longitude)
+    except ValueError as e:
+        return render(request, 'error.html', {'e': e})
+
     w = observation.get_weather()
     """Getting name of the station for Geolocation"""
     raw = observation.to_JSON()
@@ -40,5 +47,8 @@ def result(request):
 
     avg_temp = w.get_temperature('celsius')['temp']
 
-    return render(request, 'result.html', {'request': request, 'location_name': location_name, 'avg_temp': avg_temp,
+    try:
+        return render(request, 'result.html', {'request': request, 'location_name': location_name, 'avg_temp': avg_temp,
                                            'latitude': latitude, 'longitude': longitude})
+    except:
+        return render(request, '404.html')
