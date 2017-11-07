@@ -7,3 +7,10 @@ class HomeTests(TestCase):
         url = reverse('home')
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
+
+
+class ResultTest(TestCase):
+    def test_result_view_status_code(self):
+        url = reverse('result')
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
